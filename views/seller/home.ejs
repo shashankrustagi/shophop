@@ -1,0 +1,59 @@
+<%- include('../partials/header'); -%>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">ShopHop</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		<div class="navbar-nav">
+		  <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+		  <a class="nav-item nav-link" href="#">About Us</a>
+		  <a class="nav-item nav-link" href="#">Contact</a>
+		  <a class="nav-item nav-link" href="#">FAQ</a>
+		</div>
+		<form class="form-inline my-2 my-lg-0 px-2" action="/seller/logout" method="POST">
+			<button class="btn btn-outline-danger my-2 my-sm-0">Logout</button>
+		</form>
+	  </div>
+	</nav>
+	<div class="jumbotron pb-3">
+		<h3>Hello <%= username%></h3>
+		<h1>Welcome to ShopHop!</h1>
+		<div class="text-center">
+			<a href="/seller/listitem" class="btn btn-primary btn-lg mx-1 my-1" role="button">List an Item</a>
+			<a href="/seller/order" class="btn btn-info btn-lg mx-1 my-1" role="button">View Orders</a>
+		</div>
+	</div>
+	<div class="container">
+		<h2>Your Listings:</h2>
+		<div class="row text-center" style="display:flex; flex-wrap: wrap;">
+		<% products.forEach(function(product){ %>
+		    <div class="col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch py-3">
+				<div class="card" style="width: 18rem;">
+				  <img class="card-img-top" style="height: 10rem;" src="/images/<%= product.images[0]%>" alt="Card image cap">
+				  <div class="card-body">
+					<h5 class="card-title"><%= product.title %></h5>
+					<h6 class="card-text">Price: ₹ <%= product.price %></h6>
+					<p class="card-text">Category: <%= product.category %></p>
+					<p class="card-text">Quantity: <%= product.quantity %></p>
+					<form action="/seller/changeprice/<%= product._id %>" method="POST" class="py-1">
+						<input type="text" class="form-control" name="newprice" placeholder="New Price">
+						<button type="submit" class="btn btn-info btn-sm" >Update Price</button>
+					</form>
+					<form action="/seller/changeqty/<%= product._id %>" method="POST" class="py-1">
+						<input type="text" class="form-control" name="newqty" placeholder="New Quantity">
+						<button type="submit" class="btn btn-info btn-sm">Update Quantity</button>
+					</form>
+					<form action="/seller/unlistitem/<%= product._id %>" method="POST" class="py-1">
+						<button type="submit" class="btn btn-danger btn-sm">Unlist Item</button>
+					</form>
+				  </div>
+				</div>
+			</div>
+		<% }); %>
+		</div>
+	</div>
+</body>
+</html>

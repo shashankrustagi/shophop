@@ -1,0 +1,73 @@
+<%- include('../partials/header'); -%>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">ShopHop</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		<div class="navbar-nav">
+		  <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
+		  <a class="nav-item nav-link" href="#">About Us</a>
+		  <a class="nav-item nav-link" href="#">Contact</a>
+		  <a class="nav-item nav-link" href="#">FAQ</a>
+		</div>
+		<form class="form-inline my-2 my-lg-0 px-2" action="/buyer/order" method="GET">
+			<button class="btn btn-outline-primary my-2 my-sm-0">My Orders</button>
+		</form>
+		<form class="form-inline my-2 my-lg-0 px-2" action="/buyer/logout" method="POST">
+			<button class="btn btn-outline-danger my-2 my-sm-0">Logout</button>
+		</form>
+	  </div>
+	</nav>
+	<div class="jumbotron">
+	  <h2>My Cart:</h2>
+		<div class="row font-weight-bold">
+			<div class="col-sm text-left">
+				Image
+			</div>
+			<div class="col-sm text-left">
+				Title
+			</div>
+			<div class="col-sm text-left">
+				Price
+			</div>
+			<div class="col-sm">
+				Action
+			</div>
+		</div>
+		<hr class="my-6">
+		<% items.forEach(function(item){ %>
+			<div class="row align-items-center">
+				<div class="col-sm">
+					<img class="card-img-top" src="/images/<%= item.images[0]%>" 
+					alt="Card image cap" style="height: 8rem; width: 8rem">
+				</div>
+				<div class="col-sm text-left">
+					<h5 class="card-title"><%= item.title %></h5>
+				</div>
+				<div class="col-sm text-left">
+					<p class="card-text">Price: ₹ <%= item.price %></p>
+				</div>
+				<div class="col-sm">
+					<form class="form-inline py-2 px-2" action="/buyer/deletefromcart/<%= item._id %>" method="POST">
+						<button class="btn btn-outline-danger btn-sm">Delete Product</button>
+					 </form>
+				</div>
+			</div>
+			<hr class="my-6">
+		<% }); %>
+	  <h4>Final cart Value: ₹ <%= sum %></h4>
+	  <form class="form-inline py-2 px-2" action="/buyer/checkout" method="GET">
+		<button class="btn btn-info">Checkout</button>
+	  </form>
+	  <button type="button" class="btn btn-warning mx-2 px-3" onclick="goBack()">Go Back</button>
+		<script>
+		function goBack() {
+		  window.history.back();
+		}
+		</script> 
+	</div>
+</body>
+</html>

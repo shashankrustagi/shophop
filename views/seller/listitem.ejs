@@ -1,0 +1,81 @@
+<%- include('../partials/header'); -%>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">ShopHop</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		<div class="navbar-nav">
+		  <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
+		  <a class="nav-item nav-link" href="/aboutus">About Us</a>
+		  <a class="nav-item nav-link" href="#">Contact</a>
+		  <a class="nav-item nav-link" href="#">FAQ</a>
+		</div>
+		<form class="form-inline my-2 my-lg-0 px-2" action="/seller/logout" method="POST">
+			<button class="btn btn-outline-danger my-2 my-sm-0">Logout</button>
+		</form>
+	  </div>
+	</nav>
+	<div class="jumbotron">
+	  <h1 class="display-4">ShopHop</h1>
+	  <p class="lead">Grow your business online</p>
+	  <hr class="my-4">
+		<div class="card" style="width: 25rem;">
+			<div class="card-header">List an item</div>
+			<div class="card-body">
+				<form action="/seller/listitem" enctype="multipart/form-data" method="POST">
+				  <div class="form-group">
+					<label for="title">Title</label>
+					<input type="text" class="form-control" name="title" id="title" placeholder="Item name">
+				  </div>
+				  <div class="form-group">
+					<label for="desc">Description</label>
+					<textarea type="text" class="form-control" name="description" id="desc" placeholder="Item Description"></textarea>
+				  </div>
+				  <div class="form-group">
+					<label for="price">Price</label>
+					<span>₹</span>
+					<input type="text" class="form-control" name="price" id="price" placeholder="Item price">
+				  </div>
+				  <div class="form-group">
+					<label for="qty">Quantity</label>
+					<input type="text" class="form-control" name="quantity" id="qty" placeholder="Quantity of item in stock">
+				  </div>
+				  <div class="form-group">
+				    <label for="cat">Category</label>
+				    <select class="form-control" name="category" id="cat">
+					<option>Mobiles</option>
+					<option>Laptops and PCs</option>
+					<option>Beauty</option>
+					<option>Sports & Fitness</option>
+					<option>Travel</option>
+					<option>Toys & Baby</option>
+					<option>Men's Fashion</option>
+					<option>Women's Fashion</option>
+					<option>Kid's Fashion</option>
+					<option>Furniture</option>
+					<option>Computers & Laptops</option>
+					<option>Home & Kitchen</option>
+					<option>Grocery</option>
+					<option>Bags & Luggage</option>
+					<option>Audio</option>
+					<option>Daily essentials</option>
+					<option>Electronics & Accessories</option>
+					<option>Personal Health</option>
+					<option>Pet Supplies</option>
+					<option>Others</option>
+				    </select>
+				  </div>
+				  <div class="form-group">
+					<label for="img">Upload images</label>
+				    	<input type="file" class="btn btn-info btn" name="product" id="img" accept='image/*' multiple>
+				  </div>
+				  	<button type="submit" class="btn btn-primary">List Item</button>
+				  </form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

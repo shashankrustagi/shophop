@@ -1,0 +1,95 @@
+<%- include('../partials/header'); -%>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">ShopHop</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		<div class="navbar-nav">
+		  <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+		  <a class="nav-item nav-link" href="#">About Us</a>
+		  <a class="nav-item nav-link" href="#">Contact</a>
+		  <a class="nav-item nav-link" href="#">FAQ</a>
+		</div>
+		<form class="form-inline my-2 my-lg-0 px-2" action="/buyer/cart" method="GET">
+			<button class="btn btn-outline-info my-2 my-sm-0">My Cart</button>
+		</form>
+		<form class="form-inline my-2 my-lg-0 px-2" action="/buyer/logout" method="POST">
+			<button class="btn btn-outline-danger my-2 my-sm-0">Logout</button>
+		</form>
+	  </div>
+	</nav>
+	<div class="jumbotron">
+	<h2>My Orders:</h2>
+		<div class="row font-weight-bold">
+			<div class="col-sm text-left">
+				Image
+			</div>
+			<div class="col-sm text-left">
+				Title
+			</div>
+			<div class="col-sm text-left">
+				Price
+			</div>
+			<div class="col-sm text-left">
+				Order Date
+			</div>
+			<div class="col-sm text-left">
+				Delivery
+			</div>
+			<div class="col-sm text-left">
+				Status
+			</div>
+			<div class="col-sm">
+				Action
+			</div>
+		</div>
+		<hr class="my-6">
+	  <% orders.forEach(function(order){ %>
+	  	<div class="row align-items-center">
+		  	<div class="col-sm">
+				<img class="card-img-top" src="/images/<%= order.item_image %>" 
+				alt="Card image cap" style="height: 8rem; width: 8rem">
+			</div>
+			<div class="col-sm text-left">
+				<p class="card-text"><%= order.item_name %></p>
+			</div>
+			<div class="col-sm text-left">
+				<p class="card-text">₹ <%= order.order_price %></p>
+			</div>
+			<div class="col-sm text-left">
+				<p class="card-text"><%= order.order_date.toDateString() %></p>
+			</div>
+			<div class="col-sm text-left">
+				<p class="card-text"><%= order.delivery_date.toDateString() %></p>
+			</div>
+			<div class="col-sm text-left">
+				<% if (order.status == 'Ordered' || 'Shipped' || 'Out for Delivery'){ %>
+					<p class="text-info"><%= order.status %></p>
+				<% } else if (order.status == 'Delivered'){ %>
+					<p class="text-success"><%= order.status %></p>
+				<% } else { %>
+					<p class="text-warning"><%= order.status %></p>
+				<% } %>
+			</div>
+			<div class="col-sm">
+				<form action="/buyer/cancelorder/<%= order._id %>" method="POST">
+					<button type="submit" class="btn btn-outline-danger btn-sm">Cancel Order</button>
+				</form>
+			</div>
+		</div>
+		<hr class="my-6">
+	  <% }); %>
+	  
+	  <button type="button" class="btn btn-warning" onclick="goBack()">Go Back</button>
+		<script>
+		function goBack() {
+		  window.history.back();
+		}
+		</script> 
+	</div>
+	
+</body>
+</html>

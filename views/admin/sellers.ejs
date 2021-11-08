@@ -1,0 +1,91 @@
+<%- include('../partials/header'); -%>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">ShopHop</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		<div class="navbar-nav">
+		  <a class="nav-item nav-link active" href="/admin/home">Home <span class="sr-only">(current)</span></a>
+		  <a class="nav-item nav-link" href="#">About Us</a>
+		  <a class="nav-item nav-link" href="#">Contact</a>
+		  <a class="nav-item nav-link" href="#">FAQ</a>
+		</div>
+		<form class="form-inline my-2 my-lg-0 px-2" action="/admin/logout" method="POST">
+			<button class="btn btn-outline-danger my-2 my-sm-0">Logout</button>
+		</form>
+	  </div>
+	</nav>
+	<div class="jumbotron text-center">
+	  <h1>Shophop</h1>
+	  <h3>Admin Portal</h3>
+	  <hr class="my-4">
+	  <h4>Sellers:</h4>
+		<div class="container">
+			<div class="row font-weight-bold">
+				<div class="col-sm text-left">
+					Sellername
+				</div>
+				<div class="col-sm text-left">
+					Email
+				</div>
+				<div class="col-sm">
+					Phone
+				</div>
+				<div class="col-sm">
+					City
+				</div>
+				<div class="col-sm">
+					Document
+				</div>
+				<div class="col-sm">
+					Action
+				</div>
+				<div class="col-sm">
+					Action
+				</div>
+			</div>
+			<hr class="my-6">
+			<% sellers.forEach(function(seller){ %>
+				<div class="row">
+					<div class="col-sm text-left">
+						<%= seller.username %>
+					</div>
+					<div class="col-sm text-left">
+						<%= seller.email %>
+					</div>
+					<div class="col-sm text-left">
+						<%= seller.phone %>
+					</div>
+					<div class="col-sm text-left">
+						<%= seller.city %>
+					</div>
+					<div class="col-sm">
+						<a class="btn btn-outline-info btn-sm mx-1 my-1" 
+						href="/admin/viewdoc/<%= seller._id %>" role="button">View Document</a>
+					</div>
+					<div class="col-sm">
+					<% if (seller.suspended == false){ %>
+						<form class="form-inline" action="/admin/suspendseller/<%= seller._id %>" method="POST">
+							<button class="btn btn-outline-warning btn-sm mx-auto">Suspend Seller</button>
+						</form>
+					<% } else { %>
+						<form class="form-inline" action="/admin/unsuspendseller/<%= seller._id %>" method="POST">
+							<button class="btn btn-outline-success btn-sm mx-auto">Unuspend Seller</button>
+						</form>
+					<% } %>
+					</div>
+					<div class="col-sm">
+						<form class="form-inline" action="/admin/removeseller/<%= seller._id %>" method="POST">
+							<button class="btn btn-outline-danger btn-sm mx-auto">Remove Seller</button>
+						</form>
+					</div>
+				</div>
+				<hr class="my-6">
+			<% })%>
+		</div>
+	</div>
+</body>
+</html>
