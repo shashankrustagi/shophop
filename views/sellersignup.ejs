@@ -27,15 +27,15 @@
 				<form action="/sellersignup" enctype="multipart/form-data" method="POST">
 				  <div class="form-group">
 					<label for="username">Username</label>
-					<input type="text" class="form-control" name="username" id="username" placeholder="Pick a username">
+					<input type="text" class="form-control" name="username" id="username" placeholder="Pick a username" required>
 				  </div>
 				  <div class="form-group">
 					<label for="email">Email address</label>
-					<input type="email" class="form-control" name="email" id="email"  placeholder="Enter email">
+					<input type="email" class="form-control" name="email" id="email"  placeholder="Enter email" required>
 				  </div>
 				  <div class="form-group">
 					<label for="password">Password</label>
-					<input type="password" class="form-control" name="password" id="password" placeholder="Password">
+					<input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
 				  </div>
 				  <div class="form-group">
 					<label for="phone">Phone No.</label>
@@ -43,7 +43,7 @@
 				  </div>
 				  <div class="form-group">
 				    <label for="city">City</label>
-				    <select class="form-control" name="city" id="city" placeholder="Choose your city">
+				    <select class="form-control" name="city" id="city" placeholder="Choose your city" required>
 					<option>Agra</option>
 					<option>Ahemdabad</option>
 					<option>Banglore</option>
@@ -74,7 +74,7 @@
 				  </div>
 				  <div class="form-group">
 					<label for="doc">Upload your info in a pdf document</label>
-				    	<input type="file" class="btn btn-info btn" name="doc" id="doc" accept='application/pdf' single>
+				    	<input type="file" class="btn btn-info btn" name="doc" id="doc" accept='application/pdf' single required>
 				  </div>
 				  <button type="submit" class="btn btn-primary">Signup</button>
 				</form>

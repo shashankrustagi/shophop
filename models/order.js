@@ -15,7 +15,8 @@ const orderSchema = new mongoose.Schema({
 		type: Date,
 		default: new Date(+new Date() + 10*24*60*60*1000)
 	},
-	stripe_custid: String
+	stripe_custid: String,
+	delivery_add: [String]
 })
 
 module.exports = mongoose.model('Order', orderSchema);

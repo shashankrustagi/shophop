@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const path = require('path');
 const MongoStore = require('connect-mongo');
+const ExpressError = require('./utils/ExpressError');
+
 require('dotenv').config()
 
 const port = process.env.PORT || 3000
@@ -64,8 +66,18 @@ app.use("/buyer", buyerRoutes);
 app.use("/seller", sellerRoutes);
 app.use("/admin", adminRoutes);
 
-app.get('*', (req, res) => {
-	res.render('undefined')
+app.use((err, req, res, next) =>{
+	res.status(404).send("Something went wrong!")
+})
+
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page Not Found', 404))
+})
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message = 'Something Went Wrong!'
+    res.status(statusCode).send( err )
 })
 
 server.listen(port, () => {

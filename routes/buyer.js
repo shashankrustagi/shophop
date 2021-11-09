@@ -94,6 +94,7 @@ router.post('/checkout', function(req, res){
 			source: req.body.stripeToken,
 			name: buyer.username,
 			address: {
+				delname: req.body.delname,
 				line1: req.body.line1,
 				line2: req.body.line2,
 				postal_code: req.body.pin,
@@ -125,7 +126,8 @@ router.post('/checkout', function(req, res){
 								status: "Ordered",
 								order_date: new Date(),
 								delivery_date: new Date(+new Date() + 7*24*60*60*1000),
-								stripe_custid: charge.customer.id
+								stripe_custid: charge.customer.id,
+								delivery_add: charge.customer.address
 							})
 							await order.save()
 						}

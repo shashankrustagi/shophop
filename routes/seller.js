@@ -2,7 +2,9 @@ const express = require('express');
 const router  = express.Router();
 const path = require('path');
 const multer = require('multer');
+const ExpressError = require('../utils/ExpressError');
 const ObjectId = require('mongodb').ObjectId;
+const { productSchema } = require('../schemas.js');
 
 const Seller = require('../models/seller')
 const Product = require('../models/product')
@@ -13,6 +15,17 @@ const sellerLogin = (req, res, next) => {
 		return res.redirect('/sellerlogin')
 	}
 	next();
+}
+
+const validateProduct = (req, res, next) => {
+    const { error } = productSchema.validate(req.body);
+    if (error) {
+    	console.log(error)
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
 }
 
 const storage = multer.diskStorage({
@@ -45,7 +58,7 @@ router.get('/listitem', sellerLogin, (req, res) => {
 	res.render('seller/listitem')
 })
 
-router.post('/listitem', sellerLogin, upload.array('product'), (req, res) => {
+router.post('/listitem', sellerLogin, upload.array('product'), validateProduct, (req, res) => {
 	var arr = []
 	req.files.forEach(function(file){
 		arr.push(file.filename)

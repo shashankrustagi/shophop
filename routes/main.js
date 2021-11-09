@@ -5,6 +5,8 @@ const alert = require('alert')
 const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const ExpressError = require('../utils/ExpressError');
+const { adminSchema, buyerSignupSchema, sellerSignupSchema, loginSchema, otpSchema } = require('../schemas.js');
 require('dotenv').config()
 
 const Buyer = require('../models/buyer')
@@ -19,6 +21,71 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });
+
+const validateAdmin = (req, res, next) => {
+    const { error } = adminSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
+
+const validateSignupBuyer = (req, res, next) => {
+    const { error } = buyerSignupSchema.validate(req.body);
+    if (error) {
+    	console.log(error)
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
+
+const validateLoginBuyer = (req, res, next) => {
+    const { error } = loginSchema.validate(req.body);
+    if (error) {
+    	console.log(error)
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
+
+const validateSignupSeller = (req, res, next) => {
+    const { error } = sellerSignupSchema.validate(req.body);
+    if (error) {
+    	console.log(error)
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
+
+const validateLoginSeller = (req, res, next) => {
+    const { error } = loginSchema.validate(req.body);
+    if (error) {
+    	console.log(error)
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
+
+const validateOtp = (req, res, next) => {
+    const { error } = otpSchema.validate(req.body);
+    if (error) {
+    	console.log(error)
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
 
 var upload = multer({ storage: storage })
 
@@ -43,7 +110,7 @@ router.get('/signup', (req, res) => {
 	res.render('buyersignup')
 })
 
-router.post('/signup', async(req, res) => {
+router.post('/signup', validateSignupBuyer, async(req, res) => {
 	const { username, email, password } = req.body;
 	const buyer = new Buyer({ username, email, password })
 	await buyer.save();
@@ -55,7 +122,7 @@ router.get('/login', (req, res) => {
 	req.session.destroy()
 })
 
-router.post('/login', async(req, res) => {
+router.post('/login', validateLoginBuyer, async(req, res) => {
 	const { email, password } = req.body;
 	var buyerExist = await Buyer.findOne({ email });
 	var isValid = false
@@ -107,7 +174,7 @@ router.get('/otp', (req, res) => {
 	res.render('buyerotp')
 })
 
-router.post('/otp', async(req, res) => {
+router.post('/otp', validateOtp, async(req, res) => {
 	var buyer = await Buyer.findOne({ email: req.session.email });
 	var email = buyer.email
 	var otp = req.body.otp
@@ -127,7 +194,7 @@ router.get('/sellersignup', (req, res) => {
 	res.render('sellersignup')
 })
 
-router.post('/sellersignup', upload.single('doc'), async(req, res) => {
+router.post('/sellersignup', validateSignupSeller, upload.single('doc'), async(req, res) => {
 	var document = req.file.filename
 	const { username, email, password, phone, city } = req.body;
 	var isApproved = false
@@ -141,7 +208,7 @@ router.get('/sellerlogin', (req, res) => {
 	req.session.destroy()
 })
 
-router.post('/sellerlogin', async(req, res) => {
+router.post('/sellerlogin', validateLoginSeller, async(req, res) => {
 	const { email, password } = req.body;
 	var sellerExist = await Seller.findOne({ email });
 	var isValid = false
@@ -197,7 +264,7 @@ router.get('/sellerotp', (req, res) => {
 	res.render('sellerotp')
 })
 
-router.post('/sellerotp', async(req, res) => {
+router.post('/sellerotp', validateOtp, async(req, res) => {
 	var seller = await Seller.findOne({ email: req.session.email });
 	var email = seller.email
 	var otp = req.body.otp
@@ -218,7 +285,7 @@ router.get('/admin', async (req, res) => {
 	req.session.destroy()
 })
 
-router.post('/adminlogin', async(req, res) => {
+router.post('/adminlogin', validateAdmin, async(req, res) => {
 	const { secname, password } = req.body;
 	const isName = await bcrypt.compare(secname, process.env.ADMINNAME);
 	const isPass = await bcrypt.compare(password, process.env.ADMINPASS); 
