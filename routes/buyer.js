@@ -54,6 +54,16 @@ router.get('/cart', buyerLogin, (req, res) => {
         })
 })
 
+router.post('/view/:id', buyerLogin, (req, res) => {
+	Product.findOne({ _id: req.params.id }, function(err, product){
+        if(err){
+           console.log(err);
+        } else {
+           res.render('buyer/product', {product})
+        }
+        })
+})
+
 router.post('/addtocart/:id', buyerLogin, (req, res) => {
 	Buyer.updateOne({ _id: req.session.buyer_id }, { $push: {cart_items: req.params.id }}, function(err, buyer){
         if(err){

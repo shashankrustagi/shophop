@@ -24,32 +24,27 @@
 		</form>
 	  </div>
 	</nav>
-	<div class="jumbotron">
-		<h1>Welcome <%= username%></h1>
-		<h5>Welcome to ShopHop. Shop from our wide range of products!</h5>
-		<div class="container">
-		       <div class="row text-center" style="display:flex; flex-wrap: wrap;">
-			<% products.forEach(function(product){ %>
-			    <div class="col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch py-3">
-					<div class="card" style="width: 18rem;">
-					  <img class="card-img-top" style="height: 15rem;" src="/images/<%= product.images[0]%>" alt="Card image cap">
-					  <div class="card-body">
-						<h5 class="card-title"><%= product.title %></h5>
-						<h6 class="card-text">Price: ₹ <%= product.price %></h6>
-						<p class="card-text">Category: <%= product.category %></p>
-						<p class="card-text">Sold By: <%= product.soldby.username %></p>
-						<form action="/buyer/view/<%= product._id %>" method="POST">
-							<button type="submit" class="btn btn-info btn-sm mb-1">View</button>
-						</form>
-						<form action="/buyer/addtocart/<%= product._id %>" method="POST">
-							<button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
-						</form>
-					  </div>
-					</div>
-				</div>
-			<% }); %>
-			</div>
+	<div class="jumbotron mx-auto">
+	   <div class="mx-auto">
+		<div class="card mx-auto" style="width: 18rem;">
+		  <div class="card-body">
+		    <h5 class="card-title"><%= product.title %></h5>
+		    <p class="card-text"><%= product.description %></p>
+		    <h6 class="card-subtitle mb-2 text-muted">₹ <%= product.price %></h6>
+		    <a href="/buyer/home" class="card-link">Back to Homepage</a>
+		    <form action="/buyer/addtocart/<%= product._id %>" method="POST">
+				<button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+			</form>
+		  </div>
 		</div>
+		
+		<% product.images.forEach(function(image){ %>
+			<div class="col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch py-3">
+				<div class="card" style="width: 18rem;">
+				  <img class="card-img-top" style="height: 15rem;" src="/images/<%= image %>" alt="Card image cap">
+			</div>
+		<% }) %>
+	   </div>
 	</div>
 </body>
 </html>
