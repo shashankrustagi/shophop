@@ -33,7 +33,8 @@ const sellerSchema = new mongoose.Schema({
 	suspended: {
 		type: Boolean,
 		default: false
-	}
+	},
+	otp: String
 })
 
 sellerSchema.statics.validateSeller = async function (email, password) { 
@@ -41,6 +42,13 @@ sellerSchema.statics.validateSeller = async function (email, password) {
 	const isValid = await bcrypt.compare(password, seller.password); 
 	return isValid ? seller : false;
 }
+
+sellerSchema.statics.validateOTP = async function (email, otp) { 
+	const seller = await this.findOne({ email });
+	const isValid = await bcrypt.compare(otp, seller.otp); 
+	return isValid ? seller: false;
+}
+
 
 sellerSchema.pre('save', async function (next) {
 	if(!this.isModified('password')) return next();
