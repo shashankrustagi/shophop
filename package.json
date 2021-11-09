@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "alert": "^5.0.10",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
@@ -13,6 +14,7 @@
     "express-session": "^1.17.2",
     "mongoose": "^6.0.11",
     "multer": "^1.4.3",
+    "nodemailer": "^6.7.0",
     "stripe": "^8.186.0"
   },
   "scripts": {

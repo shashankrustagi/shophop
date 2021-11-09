@@ -22,12 +22,19 @@ const buyerSchema = new mongoose.Schema({
 	suspended: {
 		type: Boolean,
 		default: false
-	}
+	},
+	otp: String
 })
 
 buyerSchema.statics.validateBuyer = async function (email, password) { 
 	const buyer = await this.findOne({ email });
 	const isValid = await bcrypt.compare(password, buyer.password); 
+	return isValid ? buyer: false;
+}
+
+buyerSchema.statics.validateOTP = async function (email, otp) { 
+	const buyer = await this.findOne({ email });
+	const isValid = await bcrypt.compare(otp, buyer.otp); 
 	return isValid ? buyer: false;
 }
 
