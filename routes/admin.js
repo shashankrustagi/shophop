@@ -1,6 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const path = require('path');
+const ObjectId = require('mongodb').ObjectId;
 
 const Buyer = require('../models/buyer')
 const Seller = require('../models/seller')
@@ -58,11 +59,16 @@ router.post('/unsuspendbuyer/:id', adminLogin, (req, res) => {
 })
 
 router.post('/removebuyer/:id', adminLogin, (req, res) => {
+	Order.delete({ buyer_id: req.params.id }, function(err, order){
+		if(err){
+		   console.log(err);
+		}
+	})
 	Buyer.deleteOne({ _id: req.params.id }, function(err, buyer){
-	if(err){
-           console.log(err);
-        } else 
-           res.redirect('/admin/buyers')
+		if(err){
+		   console.log(err);
+		} else 
+		   res.redirect('/admin/buyers')
 	})
 })
 
@@ -112,6 +118,11 @@ router.post('/unsuspendseller/:id', adminLogin, (req, res) => {
 })
 
 router.post('/removeseller/:id', adminLogin, (req, res) => {
+	Product.update({ "soldby.id": req.params.id}, { $set: { listed: false }}, function(err, product){
+		if(err){
+		   console.log(err);
+		}
+        })
 	Seller.deleteOne({ _id: req.params.id }, function(err, buyer){
 	if(err){
            console.log(err);

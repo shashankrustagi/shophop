@@ -144,6 +144,7 @@ router.post('/checkout', function(req, res){
 					})
 				})
 				await Buyer.updateOne({ _id: buyer._id }, {$unset: {cart_items: 1}, $set: { cart_val: 0 }})
+				alert("Order Placed Successfully!")
 				res.redirect('home')
 			})
 			.catch((err) => {
