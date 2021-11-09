@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const path = require('path');
+const MongoStore = require('connect-mongo');
 require('dotenv').config()
 
 const port = process.env.PORT || 3000
@@ -17,37 +18,33 @@ const cert = fs.readFileSync('./CA/localhost/localhost.crt');
 const https = require('https');
 const server = https.createServer({ key, cert }, app);
 
-mongoose.connect('mongodb://localhost:27017/shophop', { useNewUrlParser: true })
+const dburl = 'mongodb://localhost:27017/' + process.env.DB
+mongoose.connect(dburl, { useNewUrlParser: true })
 	.then(()=>{
 		console.log("Connected to database")
 	})
 	.catch((err)=>{
-		console.log("Error")
-		console.log(err)
+		console.log("Error in connecting to database")
 	})
 
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'))
 
-const sessionConfig = {
-	name: 'pixel',
-	secret: 'thisabadandgoodsecret', 
-	resave: false, 
-	saveUninitialized: true,
-	cookie: {
-		httpOnly: true,
-		secure: true,
-		expires: Date.now() + 1000*60*60*24*7,
-		maxAge: 1000*60*60*24*7
-	}
-}
+app.use(session({
+  secret: 'thisisagoodandbadsecret',
+  saveUninitialized: false, 
+  resave: false, 
+  store: MongoStore.create({
+    mongoUrl: dburl,
+    touchAfter: 24 * 3600 // time period in seconds
+  })
+}));
 
 app.use(mongoSanitize());
 app.use(helmet({contentSecurityPolicy: false}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session(sessionConfig))
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended:true }))
 
