@@ -3,6 +3,7 @@ const router  = express.Router();
 const path = require('path');
 const ObjectId = require('mongodb').ObjectId;
 const alert = require('alert')
+const funcAsync = require('../utils/funcAsync');
 
 const Buyer = require('../models/buyer')
 const Seller = require('../models/seller')
@@ -26,18 +27,19 @@ const superadminLogin = (req, res, next) => {
 	next();
 }
 
-router.get('/home', adminLogin, async(req, res) => {
+router.get('/home', adminLogin, (req, res) => {
 	res.render('admin/home')
 })
 
-router.get('/supadminhome', adminLogin, async(req, res) => {
+router.get('/supadminhome', adminLogin, (req, res) => {
 	res.render('admin/supadminhome')
 })
 
-router.get('/buyers', adminLogin, async(req, res) => {
+router.get('/buyers', adminLogin, (req, res) => {
 	Buyer.find({}, function(err, buyers){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.render('admin/buyers', { buyers })
         })
@@ -46,10 +48,10 @@ router.get('/buyers', adminLogin, async(req, res) => {
 router.get('/vieworders/:id', adminLogin, (req, res) => {
 	Order.find({ buyer_id: req.params.id }, function(err, orders){
 		if(err){
-			console.log(err)
+		   alert(err);
+		   next();
 		}
 		else{
-			console.log(orders)
 			res.render('admin/buyerorders', { orders })
 		}
         })
@@ -58,7 +60,8 @@ router.get('/vieworders/:id', adminLogin, (req, res) => {
 router.post('/suspendbuyer/:id', adminLogin, (req, res) => {
 	Buyer.updateOne({ _id: req.params.id }, { $set: { suspended: true }}, function(err, buyer){
 	if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.redirect('/admin/buyers')
 	})
@@ -67,7 +70,8 @@ router.post('/suspendbuyer/:id', adminLogin, (req, res) => {
 router.post('/unsuspendbuyer/:id', adminLogin, (req, res) => {
 	Buyer.updateOne({ _id: req.params.id }, { $set: { suspended: false }}, function(err, buyer){
 	if(err){
-           console.log(err);
+            alert(err);
+           next();
         } else 
            res.redirect('/admin/buyers')
 	})
@@ -76,30 +80,34 @@ router.post('/unsuspendbuyer/:id', adminLogin, (req, res) => {
 router.post('/removebuyer/:id', adminLogin, (req, res) => {
 	Order.delete({ buyer_id: req.params.id }, function(err, order){
 		if(err){
-		   console.log(err);
+		   alert(err);
+		   next();
 		}
 	})
 	Buyer.deleteOne({ _id: req.params.id }, function(err, buyer){
 		if(err){
-		   console.log(err);
+		   alert(err);
+		   next();
 		} else 
 		   res.redirect('/admin/buyers')
 	})
 })
 
-router.get('/sellers', adminLogin, async(req, res) => {
+router.get('/sellers', adminLogin, (req, res) => {
 	Seller.find({ isApproved: true }, function(err, sellers){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.render('admin/sellers', { sellers })
         })
 })
 
-router.get('/requests', adminLogin, async(req, res) => {
+router.get('/requests', adminLogin, (req, res) => {
 	Seller.find({ isApproved: false}, function(err, requests){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.render('admin/requests', { requests })
         })
@@ -108,7 +116,8 @@ router.get('/requests', adminLogin, async(req, res) => {
 router.post('/approveseller/:id', adminLogin, (req, res) => {
 	Seller.updateOne({ _id: req.params.id }, { $set: {isApproved: true }}, function(err, buyer){
 	if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.redirect('/admin/requests')
 	})
@@ -117,7 +126,8 @@ router.post('/approveseller/:id', adminLogin, (req, res) => {
 router.post('/suspendseller/:id', adminLogin, (req, res) => {
 	Seller.updateOne({ _id: req.params.id }, { $set: {suspended: true }}, function(err, buyer){
 	if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.redirect('/admin/sellers')
 	})
@@ -126,7 +136,8 @@ router.post('/suspendseller/:id', adminLogin, (req, res) => {
 router.post('/unsuspendseller/:id', adminLogin, (req, res) => {
 	Seller.updateOne({ _id: req.params.id }, { $set: {suspended: false}}, function(err, buyer){
 	if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.redirect('/admin/sellers')
 	})
@@ -135,12 +146,14 @@ router.post('/unsuspendseller/:id', adminLogin, (req, res) => {
 router.post('/removeseller/:id', adminLogin, (req, res) => {
 	Product.update({ "soldby.id": req.params.id}, { $set: { listed: false }}, function(err, product){
 		if(err){
-		   console.log(err);
+		   alert(err);
+		   next();
 		}
         })
 	Seller.deleteOne({ _id: req.params.id }, function(err, buyer){
 	if(err){
-           console.log(err);
+            alert(err);
+            next();
         } else 
            res.redirect('/admin/sellers')
 	})
@@ -149,7 +162,8 @@ router.post('/removeseller/:id', adminLogin, (req, res) => {
 router.get('/viewdoc/:id', adminLogin, (req, res) => {
 	Seller.findOne({ _id: req.params.id }, function(err, seller){
 		if(err){
-			console.log(err)
+		   alert(err);
+		   next();
 		}
 		else{
 			res.render('admin/viewdoc', { docName : seller.document})
@@ -157,19 +171,21 @@ router.get('/viewdoc/:id', adminLogin, (req, res) => {
         })
 })
 
-router.get('/admins', superadminLogin, async(req, res) => {
+router.get('/admins', superadminLogin, (req, res) => {
 	Admin.find({ isApproved: true }, function(err, admins){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.render('admin/admins', { admins })
         })
 })
 
-router.get('/adminrequests', superadminLogin, async(req, res) => {
+router.get('/adminrequests', superadminLogin, (req, res) => {
 	Admin.find({ isApproved: false }, function(err, admins){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.render('admin/adminrequests', { admins })
         })
@@ -178,7 +194,8 @@ router.get('/adminrequests', superadminLogin, async(req, res) => {
 router.post('/approveadmin/:id', superadminLogin, (req, res) => {
 	Admin.updateOne({ _id: req.params.id }, { $set: {isApproved: true }}, function(err, admin){
 	if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            alert('Admin approved!')
            res.redirect('/admin/adminrequests')
@@ -189,7 +206,8 @@ router.post('/approveadmin/:id', superadminLogin, (req, res) => {
 router.post('/removeadmin/:id', superadminLogin, (req, res) => {
 	Admin.deleteOne({ _id: req.params.id }, function(err, admin){
 	if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            alert('Admin removed!')
            res.redirect('/admin/admins')

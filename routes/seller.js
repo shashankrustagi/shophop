@@ -3,7 +3,9 @@ const router  = express.Router();
 const path = require('path');
 const multer = require('multer');
 const ExpressError = require('../utils/ExpressError');
+const funcAsync = require('../utils/funcAsync');
 const ObjectId = require('mongodb').ObjectId;
+const alert = require('alert')
 const { productSchema } = require('../schemas.js');
 
 const Seller = require('../models/seller')
@@ -20,7 +22,6 @@ const sellerLogin = (req, res, next) => {
 const validateProduct = (req, res, next) => {
     const { error } = productSchema.validate(req.body);
     if (error) {
-    	console.log(error)
         const msg = error.details.map(el => el.message).join(',')
         throw new ExpressError(msg, 400)
     } else {
@@ -40,19 +41,20 @@ const storage = multer.diskStorage({
 
 var upload = multer({ storage: storage })
 
-router.get('/home', sellerLogin, async(req, res) => {
+router.get('/home', sellerLogin, funcAsync(async(req, res) => {
 	const seller_id = req.session.seller_id
 	const seller = await Seller.findOne({ _id: seller_id })
 	const username = seller.username
 	var s_id = await ObjectId(seller_id)
 	Product.find({ "soldby.id": s_id, listed: true }, function(err, sellerProducts){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            res.render('seller/home', { username , products: sellerProducts})
 	}
         })
-})
+}))
 
 router.get('/listitem', sellerLogin, (req, res) => {
 	res.render('seller/listitem')
@@ -66,7 +68,8 @@ router.post('/listitem', sellerLogin, upload.array('product'), validateProduct, 
 	console.log(arr)
 	Seller.findOne({ _id: req.session.seller_id}, (err, seller)=>{
 		if(err) {
-			console.log(err)
+		   alert(err);
+		   next();
 		}
 		else{
 			const seller_id = seller._id;
@@ -77,7 +80,6 @@ router.post('/listitem', sellerLogin, upload.array('product'), validateProduct, 
 					images: arr, listed: true}
 			)
 			product.save()
-			console.log(product)
 			res.redirect('home')
 		}
 	})
@@ -86,17 +88,18 @@ router.post('/listitem', sellerLogin, upload.array('product'), validateProduct, 
 router.post('/changeprice/:id', sellerLogin, (req, res) => {
 	Product.updateOne({ _id: req.params.id }, { $set: { price: req.body.newprice}}, function(err, buyer){
         if(err){
-           console.log(err);
-        } else {
-           res.redirect('/seller/home')
+           alert(err);
+           next();
         }
+           res.redirect('/seller/home')
         })
 })
 
 router.post('/changeqty/:id', sellerLogin, (req, res) => {
 	Product.updateOne({ _id: req.params.id }, { $set: { quantity: req.body.newqty}}, function(err, buyer){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            res.redirect('/seller/home')
         }
@@ -106,7 +109,8 @@ router.post('/changeqty/:id', sellerLogin, (req, res) => {
 router.post('/unlistitem/:id', sellerLogin, (req, res) => {
 	Product.updateOne({ _id: req.params.id }, { $set: { listed: false }}, function(err, buyer){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            res.redirect('/seller/home')
         }
@@ -116,10 +120,10 @@ router.post('/unlistitem/:id', sellerLogin, (req, res) => {
 router.get('/order', sellerLogin, (req, res) => {
 	Order.find({ seller_id: req.session.seller_id }, function(err, orders){
 		if(err){
-			console.log(err)
+		   alert(err);
+		   next();
 		}
 		else{
-			console.log(orders)
 			res.render('seller/order', { orders })
 		}
         })
@@ -129,7 +133,8 @@ router.post('/updateorder/:id', sellerLogin, (req, res) => {
 	console.log(req.params.status)
 	Order.updateOne({ _id: req.params.id }, { $set: { status: req.body.status }}, function(err, buyer){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            res.redirect('/seller/order')
         }

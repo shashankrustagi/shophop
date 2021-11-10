@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const ExpressError = require('../utils/ExpressError');
+const funcAsync = require('../utils/funcAsync');
 const { adminSchema, buyerSignupSchema, sellerSignupSchema, loginSchema, otpSchema } = require('../schemas.js');
 require('dotenv').config()
 
@@ -111,19 +112,19 @@ router.get('/signup', (req, res) => {
 	res.render('buyersignup')
 })
 
-router.post('/signup', validateSignupBuyer, async(req, res) => {
+router.post('/signup', validateSignupBuyer, funcAsync(async(req, res) => {
 	const { username, email, password } = req.body;
 	const buyer = new Buyer({ username, email, password })
 	await buyer.save();
 	res.redirect('/login')
-})
+}))
 
 router.get('/login', (req, res) => {
 	res.render('buyerlogin')
 	req.session.destroy()
 })
 
-router.post('/login', validateLoginBuyer, async(req, res) => {
+router.post('/login', validateLoginBuyer, funcAsync(async(req, res) => {
 	const { email, password } = req.body;
 	var buyerExist = await Buyer.findOne({ email });
 	var isValid = false
@@ -166,7 +167,7 @@ router.post('/login', validateLoginBuyer, async(req, res) => {
 		alert("Wrong email or password!")
 		res.redirect('/login')
 	}
-})
+}))
 
 router.get('/otp', (req, res) => {
 	if(!req.session.credentials){
@@ -175,7 +176,7 @@ router.get('/otp', (req, res) => {
 	res.render('buyerotp')
 })
 
-router.post('/otp', validateOtp, async(req, res) => {
+router.post('/otp', validateOtp, funcAsync(async(req, res) => {
 	var buyer = await Buyer.findOne({ email: req.session.email });
 	var email = buyer.email
 	var otp = req.body.otp
@@ -189,27 +190,27 @@ router.post('/otp', validateOtp, async(req, res) => {
 		alert("Wrong OTP entered!")
 		res.redirect('/login')
 	}
-})
+}))
 
 router.get('/sellersignup', (req, res) => {
 	res.render('sellersignup')
 })
 
-router.post('/sellersignup', upload.single('doc'), validateSignupSeller, async(req, res) => {
+router.post('/sellersignup', upload.single('doc'), validateSignupSeller, funcAsync(async(req, res) => {
 	var document = req.file.filename
 	const { username, email, password, phone, city } = req.body;
 	var isApproved = false
 	const seller = new Seller({ username, email, password, phone, city, document, isApproved })
 	await seller.save();
 	res.redirect('/sellerlogin')
-})
+}))
 
 router.get('/sellerlogin', (req, res) => {
 	res.render('sellerlogin')
 	req.session.destroy()
 })
 
-router.post('/sellerlogin', validateLoginSeller, async(req, res) => {
+router.post('/sellerlogin', validateLoginSeller, funcAsync(async(req, res) => {
 	const { email, password } = req.body;
 	var sellerExist = await Seller.findOne({ email });
 	var isValid = false
@@ -256,7 +257,7 @@ router.post('/sellerlogin', validateLoginSeller, async(req, res) => {
 		alert("Wrong email or password!")
 		res.redirect('/sellerlogin')
 	}
-})
+}))
 
 router.get('/sellerotp', (req, res) => {
 	if(!req.session.credentials){
@@ -265,7 +266,7 @@ router.get('/sellerotp', (req, res) => {
 	res.render('sellerotp')
 })
 
-router.post('/sellerotp', validateOtp, async(req, res) => {
+router.post('/sellerotp', validateOtp, funcAsync(async(req, res) => {
 	var seller = await Seller.findOne({ email: req.session.email });
 	var email = seller.email
 	var otp = req.body.otp
@@ -279,25 +280,25 @@ router.post('/sellerotp', validateOtp, async(req, res) => {
 		alert("Wrong OTP entered!")
 		res.redirect('/sellerlogin')
 	}
-})
+}))
 
 router.get('/adminsignup', (req, res) => {
 	res.render('adminsignup')
 })
 
-router.post('/adminsignup', validateSignupBuyer, async(req, res) => {
+router.post('/adminsignup', validateSignupBuyer, funcAsync(async(req, res) => {
 	const { username, email, password } = req.body;
 	const admin = new Admin({ username, email, password })
 	await admin.save();
 	res.redirect('/adminlogin')
-})
+}))
 
-router.get('/adminlogin', async (req, res) => {
+router.get('/adminlogin', (req, res) => {
 	res.render('adminlogin')
 	req.session.destroy()
 })
 
-router.post('/adminlogin', validateAdmin, async(req, res) => {
+router.post('/adminlogin', validateAdmin, funcAsync(async(req, res) => {
 	const { username, password } = req.body;
 	var adminExist = await Admin.findOne({ username });
 	var isValid = false
@@ -318,14 +319,14 @@ router.post('/adminlogin', validateAdmin, async(req, res) => {
 		alert("Wrong email or password!")
 		res.redirect('/adminlogin')
 	}
-})
+}))
 
-router.get('/supadmin', async (req, res) => {
+router.get('/supadmin', funcAsync(async (req, res) => {
 	res.render('supadminlogin')
 	req.session.destroy()
-})
+}))
 
-router.post('/supadminlogin', validateAdmin, async(req, res) => {
+router.post('/supadminlogin', validateAdmin, funcAsync(async(req, res) => {
 	const { username, password } = req.body;
 	const isName = await bcrypt.compare(username, process.env.ADMINNAME);
 	const isPass = await bcrypt.compare(password, process.env.ADMINPASS); 
@@ -337,7 +338,7 @@ router.post('/supadminlogin', validateAdmin, async(req, res) => {
 	else {
 		res.redirect('/supadmin')
 	}
-})
+}))
 
 router.post('/logout', (req, res) => {
 	if(req.session) {

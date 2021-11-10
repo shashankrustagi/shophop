@@ -1,5 +1,6 @@
 const express = require('express');
 const router  = express.Router();
+const funcAsync = require('../utils/funcAsync');
 require('dotenv').config()
 
 const Buyer = require('../models/buyer')
@@ -18,24 +19,26 @@ const buyerLogin = (req, res, next) => {
 	next();
 }
 
-router.get('/home', buyerLogin, async(req, res) => {
+router.get('/home', buyerLogin, funcAsync(async(req, res) => {
 	const buyer_id = req.session.buyer_id
 	const buyer = await Buyer.findOne({ _id: buyer_id })
 	const username = buyer.username
 	Product.find({}, function(err, allProducts){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else 
            res.render('buyer/home', { username , products: allProducts})
         })
-})
+}))
 
 router.get('/cart', buyerLogin, (req, res) => {
 	Buyer.findOne({ _id: req.session.buyer_id }, function(err, buyer){
 		if(err){
-		  console.log(err);
+		   alert(err);
+		   next();
 		} else {
-		   Product.find({ _id: buyer.cart_items }, async function(err, items){
+		   Product.find({ _id: buyer.cart_items }, funcAsync(async function(err, items){
 		   if(err){
 			console.log(err);
 		    } else {
@@ -49,7 +52,7 @@ router.get('/cart', buyerLogin, (req, res) => {
 				res.render('buyer/cart', { buyer, items, sum })
 			})
 		     }
-		   })
+		   }))
 		}
         })
 })
@@ -57,7 +60,8 @@ router.get('/cart', buyerLogin, (req, res) => {
 router.post('/view/:id', buyerLogin, (req, res) => {
 	Product.findOne({ _id: req.params.id }, function(err, product){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            res.render('buyer/product', {product})
         }
@@ -67,7 +71,8 @@ router.post('/view/:id', buyerLogin, (req, res) => {
 router.post('/addtocart/:id', buyerLogin, (req, res) => {
 	Buyer.updateOne({ _id: req.session.buyer_id }, { $push: {cart_items: req.params.id }}, function(err, buyer){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            res.redirect('/buyer/home')
         }
@@ -77,7 +82,8 @@ router.post('/addtocart/:id', buyerLogin, (req, res) => {
 router.post('/deletefromcart/:id', buyerLogin, (req, res) => {
 	Buyer.updateOne({ _id: req.session.buyer_id }, { $pull: {cart_items: req.params.id }}, function(err, buyer){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            res.redirect('/buyer/cart')
         }
@@ -87,7 +93,8 @@ router.post('/deletefromcart/:id', buyerLogin, (req, res) => {
 router.get('/checkout', buyerLogin, (req, res) => {
 	Buyer.findOne({ _id: req.session.buyer_id }, function(err, buyer){
 		if(err){
-		  console.log(err);
+		   alert(err);
+		   next();
 		} else {
 			res.render('buyer/payment' , { username: buyer.username, amt: buyer.cart_val, key: Publishable_Key })
 		}
@@ -97,7 +104,8 @@ router.get('/checkout', buyerLogin, (req, res) => {
 router.post('/checkout', function(req, res){
 	Buyer.findOne({ _id: req.session.buyer_id }, function(err, buyer){
 		if(err){
-		  console.log(err);
+		   alert(err);
+		   next();
 		} else {
 			stripe.customers.create({
 			email: req.body.stripeEmail,
@@ -120,9 +128,9 @@ router.post('/checkout', function(req, res){
 					customer: customer.id
 				});
 			})
-			.then(async (charge) => {
+			.then(funcAsync(async (charge) => {
 				await buyer.cart_items.forEach(function(item){
-					Product.findOne({ _id: item }, async function(err, prod){
+					Product.findOne({ _id: item }, funcAsync(async function(err, prod){
 						if(err) {
 							console.log(err)}
 						else {
@@ -140,11 +148,11 @@ router.post('/checkout', function(req, res){
 							})
 							await order.save()
 						}
-					})
+					}))
 				})
 				await Buyer.updateOne({ _id: buyer._id }, {$unset: {cart_items: 1}, $set: { cart_val: 0 }})
 				res.redirect('home')
-			})
+			}))
 			.catch((err) => {
 				res.send(err)
 			});
@@ -155,7 +163,8 @@ router.post('/checkout', function(req, res){
 router.get('/order', buyerLogin, (req, res) => {
 	Order.find({ buyer_id: req.session.buyer_id }, function(err, orders){
 		if(err){
-			console.log(err)
+		         alert(err);
+          		 next();
 		}
 		else{
 			res.render('buyer/order', { orders })
@@ -166,7 +175,8 @@ router.get('/order', buyerLogin, (req, res) => {
 router.post('/cancelorder/:id', buyerLogin, (req, res) => {
 	Order.deleteOne({ _id: req.params.id }, function(err, buyer){
         if(err){
-           console.log(err);
+           alert(err);
+           next();
         } else {
            res.redirect('/buyer/order')
         }
