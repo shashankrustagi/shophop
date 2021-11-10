@@ -2,7 +2,7 @@ const Joi = require('joi');
 const { number } = require('joi');
 
 module.exports.adminSchema = Joi.object({
-        secname: Joi.string().required(),
+        username: Joi.string().required(),
         password: Joi.string().required()
 });
 

@@ -11,6 +11,7 @@ require('dotenv').config()
 
 const Buyer = require('../models/buyer')
 const Seller = require('../models/seller')
+const Admin = require('../models/admin')
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -194,7 +195,7 @@ router.get('/sellersignup', (req, res) => {
 	res.render('sellersignup')
 })
 
-router.post('/sellersignup', validateSignupSeller, upload.single('doc'), async(req, res) => {
+router.post('/sellersignup', upload.single('doc'), validateSignupSeller, async(req, res) => {
 	var document = req.file.filename
 	const { username, email, password, phone, city } = req.body;
 	var isApproved = false
@@ -280,21 +281,61 @@ router.post('/sellerotp', validateOtp, async(req, res) => {
 	}
 })
 
-router.get('/admin', async (req, res) => {
+router.get('/adminsignup', (req, res) => {
+	res.render('adminsignup')
+})
+
+router.post('/adminsignup', validateSignupBuyer, async(req, res) => {
+	const { username, email, password } = req.body;
+	const admin = new Admin({ username, email, password })
+	await admin.save();
+	res.redirect('/adminlogin')
+})
+
+router.get('/adminlogin', async (req, res) => {
 	res.render('adminlogin')
 	req.session.destroy()
 })
 
 router.post('/adminlogin', validateAdmin, async(req, res) => {
-	const { secname, password } = req.body;
-	const isName = await bcrypt.compare(secname, process.env.ADMINNAME);
-	const isPass = await bcrypt.compare(password, process.env.ADMINPASS); 
-	if(isName && isPass){
-		req.session.admin_id = "12345678987654321"
-		res.redirect('/admin/home')
+	const { username, password } = req.body;
+	var adminExist = await Admin.findOne({ username });
+	var isValid = false
+	if(adminExist){
+		isValid = await Admin.validateAdmin(username, password)
+	}
+	if(adminExist && isValid){
+		const isApproved = adminExist.isApproved
+		if(!isApproved){
+			res.render('admin/notapproved')
+		}
+		else{  
+			req.session.admin_id = adminExist._id
+			res.redirect('/admin/home')
+		}		
 	}
 	else {
-		res.redirect('/admin')
+		alert("Wrong email or password!")
+		res.redirect('/adminlogin')
+	}
+})
+
+router.get('/supadmin', async (req, res) => {
+	res.render('supadminlogin')
+	req.session.destroy()
+})
+
+router.post('/supadminlogin', validateAdmin, async(req, res) => {
+	const { username, password } = req.body;
+	const isName = await bcrypt.compare(username, process.env.ADMINNAME);
+	const isPass = await bcrypt.compare(password, process.env.ADMINPASS); 
+	if(isName && isPass){
+		req.session.admin_id = "98765432123456789"
+		req.session.superadmin_id = "12345678987654321"
+		res.redirect('/admin/supadminhome')
+	}
+	else {
+		res.redirect('/supadmin')
 	}
 })
 

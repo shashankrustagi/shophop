@@ -104,7 +104,6 @@ router.post('/checkout', function(req, res){
 			source: req.body.stripeToken,
 			name: buyer.username,
 			address: {
-				delname: req.body.delname,
 				line1: req.body.line1,
 				line2: req.body.line2,
 				postal_code: req.body.pin,
@@ -144,7 +143,6 @@ router.post('/checkout', function(req, res){
 					})
 				})
 				await Buyer.updateOne({ _id: buyer._id }, {$unset: {cart_items: 1}, $set: { cart_val: 0 }})
-				alert("Order Placed Successfully!")
 				res.redirect('home')
 			})
 			.catch((err) => {

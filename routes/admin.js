@@ -2,21 +2,36 @@ const express = require('express');
 const router  = express.Router();
 const path = require('path');
 const ObjectId = require('mongodb').ObjectId;
+const alert = require('alert')
 
 const Buyer = require('../models/buyer')
 const Seller = require('../models/seller')
 const Product = require('../models/product')
 const Order = require('../models/order')
+const Admin = require('../models/admin')
 
 const adminLogin = (req, res, next) => {
 	if(!req.session.admin_id){
-		return res.redirect('/admin')
+		alert('You dont have access to this route')
+		return res.redirect('/adminlogin')
+	}
+	next();
+}
+
+const superadminLogin = (req, res, next) => {
+	if(!req.session.superadmin_id){
+		alert('You dont have access to this route')
+		return res.redirect('/adminlogin')
 	}
 	next();
 }
 
 router.get('/home', adminLogin, async(req, res) => {
 	res.render('admin/home')
+})
+
+router.get('/supadminhome', adminLogin, async(req, res) => {
+	res.render('admin/supadminhome')
 })
 
 router.get('/buyers', adminLogin, async(req, res) => {
@@ -142,12 +157,52 @@ router.get('/viewdoc/:id', adminLogin, (req, res) => {
         })
 })
 
+router.get('/admins', superadminLogin, async(req, res) => {
+	Admin.find({ isApproved: true }, function(err, admins){
+        if(err){
+           console.log(err);
+        } else 
+           res.render('admin/admins', { admins })
+        })
+})
+
+router.get('/adminrequests', superadminLogin, async(req, res) => {
+	Admin.find({ isApproved: false }, function(err, admins){
+        if(err){
+           console.log(err);
+        } else 
+           res.render('admin/adminrequests', { admins })
+        })
+})
+
+router.post('/approveadmin/:id', superadminLogin, (req, res) => {
+	Admin.updateOne({ _id: req.params.id }, { $set: {isApproved: true }}, function(err, admin){
+	if(err){
+           console.log(err);
+        } else {
+           alert('Admin approved!')
+           res.redirect('/admin/adminrequests')
+        }
+	})
+})
+
+router.post('/removeadmin/:id', superadminLogin, (req, res) => {
+	Admin.deleteOne({ _id: req.params.id }, function(err, admin){
+	if(err){
+           console.log(err);
+        } else {
+           alert('Admin removed!')
+           res.redirect('/admin/admins')
+        }
+	})
+})
+
 router.post('/logout', (req, res) => {
 	if(req.session) {
 		req.session.auth = null
 		req.session.destroy()
 	}
-	res.redirect('/admin')
+	res.redirect('/')
 })
 
 module.exports = router;
