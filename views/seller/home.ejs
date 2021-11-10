@@ -39,11 +39,11 @@
 					<p class="card-text">Category: <%= product.category %></p>
 					<p class="card-text">Quantity: <%= product.quantity %></p>
 					<form action="/seller/changeprice/<%= product._id %>" method="POST" class="py-1">
-						<input type="text" class="form-control" name="newprice" placeholder="New Price">
+						<input type="text" class="form-control" name="newprice" placeholder="New Price" required>
 						<button type="submit" class="btn btn-info btn-sm" >Update Price</button>
 					</form>
 					<form action="/seller/changeqty/<%= product._id %>" method="POST" class="py-1">
-						<input type="text" class="form-control" name="newqty" placeholder="New Quantity">
+						<input type="text" class="form-control" name="newqty" placeholder="New Quantity" required>
 						<button type="submit" class="btn btn-info btn-sm">Update Quantity</button>
 					</form>
 					<form action="/seller/unlistitem/<%= product._id %>" method="POST" class="py-1">

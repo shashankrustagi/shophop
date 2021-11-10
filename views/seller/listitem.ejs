@@ -28,20 +28,20 @@
 				<form action="/seller/listitem" enctype="multipart/form-data" method="POST">
 				  <div class="form-group">
 					<label for="title">Title</label>
-					<input type="text" class="form-control" name="title" id="title" placeholder="Item name">
+					<input type="text" class="form-control" name="title" id="title" placeholder="Item name" required>
 				  </div>
 				  <div class="form-group">
 					<label for="desc">Description</label>
-					<textarea type="text" class="form-control" name="description" id="desc" placeholder="Item Description"></textarea>
+					<textarea type="text" class="form-control" name="description" id="desc" placeholder="Item Description" required></textarea>
 				  </div>
 				  <div class="form-group">
 					<label for="price">Price</label>
 					<span>₹</span>
-					<input type="text" class="form-control" name="price" id="price" placeholder="Item price">
+					<input type="text" class="form-control" name="price" id="price" placeholder="Item price" required>
 				  </div>
 				  <div class="form-group">
 					<label for="qty">Quantity</label>
-					<input type="text" class="form-control" name="quantity" id="qty" placeholder="Quantity of item in stock">
+					<input type="text" class="form-control" name="quantity" id="qty" placeholder="Quantity of item in stock" required>
 				  </div>
 				  <div class="form-group">
 				    <label for="cat">Category</label>
@@ -70,7 +70,7 @@
 				  </div>
 				  <div class="form-group">
 					<label for="img">Upload images</label>
-				    	<input type="file" class="btn btn-info btn" name="product" id="img" accept='image/*' multiple>
+				    	<input type="file" class="btn btn-info btn" name="product" id="img" accept='image/*' multiple required>
 				  </div>
 				  	<button type="submit" class="btn btn-primary">List Item</button>
 				  </form>
