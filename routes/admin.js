@@ -78,15 +78,10 @@ router.post('/unsuspendbuyer/:id', adminLogin, (req, res) => {
 })
 
 router.post('/removebuyer/:id', adminLogin, (req, res) => {
-	Order.delete({ buyer_id: req.params.id }, function(err, order){
-		if(err){
-		   alert(err);
-		   next();
-		}
-	})
 	Buyer.deleteOne({ _id: req.params.id }, function(err, buyer){
 		if(err){
 		   alert(err);
+		   console.log("error removing buyer")
 		   next();
 		} else 
 		   res.redirect('/admin/buyers')

@@ -3,6 +3,7 @@ const bodyparser = require('body-parser');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const app = express();
+const alert = require('alert');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
@@ -12,6 +13,7 @@ const ExpressError = require('./utils/ExpressError');
 
 require('dotenv').config()
 
+const host = 'localhost'
 const port = process.env.PORT || 3000
 
 const fs = require('fs');
@@ -26,7 +28,7 @@ mongoose.connect(dburl, { useNewUrlParser: true })
 		console.log("Connected to database")
 	})
 	.catch((err)=>{
-		console.log("Error in connecting to database")
+		alert("Error in connecting to database")
 	})
 
 // View engine setup
@@ -80,6 +82,6 @@ app.use((err, req, res, next) => {
     res.status(statusCode).send( err )
 })
 
-server.listen(port, () => {
+server.listen(port, host, () => {
 	console.log(`Server running on Port ${port}`)
 })

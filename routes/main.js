@@ -1,7 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const nodemailer=require('nodemailer');
-const alert = require('alert')
+const alert = require('alert');
 const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
