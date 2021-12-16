@@ -8,7 +8,7 @@ A secure e-commerce Website
   - Shashank Rustagi
   - Nandha Shivam Niteshumar
   
- - Technologies Used
+ ## Technologies Used
   - Programming Language: JavaScript
   - Server: NodeJS
   - Engine: ExpressJS
