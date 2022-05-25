@@ -3,9 +3,9 @@ A secure e-commerce Website
 
 - Contributors
   - Rameez Raja
+  - Shashank Rustagi
   - Devanshi Gupta
   - Alka Kumari
-  - Shashank Rustagi
   - Nandha Shivam Niteshumar
   
  ## Technologies Used
